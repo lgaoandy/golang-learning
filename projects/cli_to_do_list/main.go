@@ -21,6 +21,10 @@ func userInput(prompt string) (answer string) {
 
 func selectOption() (option int) {
 	for {
+		fmt.Println("\nOptions Menu:")
+		fmt.Print("(1) View List, ")
+		fmt.Print("(2) Add to List, ")
+		fmt.Print("(3) Exit")
 		answer := userInput("Select an option: ")
 		if isInteger(answer) {
 			option, _ = strconv.Atoi(answer)
@@ -35,7 +39,7 @@ func viewList() {
 		fmt.Println("Error opening file")
 	}
 
-	fmt.Println("Your list:")
+	fmt.Println("\nYour list:")
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		fmt.Printf("- %v\n", scanner.Text())
@@ -43,34 +47,39 @@ func viewList() {
 }
 
 func addToList() {
-	// 
-	// f, err := os.OpenFile("list.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	// if err != nil {
-	// 	fmt.Printf("Error opening file: %v\n", err)
-    //     return
-	// }
+	newTask := userInput("New task: ")
+	
+	f, err := os.OpenFile("list.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Printf("Error opening file: %v\n", err)
+        return
+	}
 
-	// deter f.Close()
+	defer f.Close()
 
-	// if _, err := f.WriteString()
+    if _, err := f.WriteString(newTask + "\n"); err != nil {
+        fmt.Printf("Error writing to file: %v\n", err)
+        return
+    }
 }
 
 func main() {
 	fmt.Println("TO-DO LIST")
-	fmt.Println("Here are your options:")
-	fmt.Println("(1) - View List")
-	fmt.Println("(2) - Add to List")
-	fmt.Println("(3) - Exit")
 
 	// User prompt menu
-	action := selectOption()
+	var action int
 
-	// Read from list
-	switch action {
-	case 1:
-		viewList()
-	case 2:
-		addToList()
+	for {
+		action = selectOption()
+
+		// Read from list
+		switch action {
+		case 1:
+			viewList()
+		case 2:
+			addToList()
+		case 3:
+			return
+		}
 	}
-
 }
